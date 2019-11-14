@@ -247,7 +247,7 @@ runGenT size seed (GenT m) =
 --
 evalGen :: Size -> Seed -> Gen a -> Maybe (Tree a)
 evalGen size seed =
-  fmap (fmap Maybe.fromJust) .
+  fmap (fmap (fromJust' "evalGen")) .
   Tree.filter Maybe.isJust .
   evalGenT size seed
 
@@ -311,7 +311,7 @@ toTreeMaybeT =
 --
 runDiscardEffect :: TreeT (MaybeT Identity) a -> Maybe (Tree a)
 runDiscardEffect =
-  fmap (fmap Maybe.fromJust) .
+  fmap (fmap (fromJust' "runDiscardEffect")) .
   Tree.filter Maybe.isJust .
   runDiscardEffectT
 
@@ -1661,3 +1661,7 @@ renderTree size seed gen =
 -- These functions are exported in case you need them in a pinch, but are not
 -- part of the public API and may change at any time, even as part of a minor
 -- update.
+
+
+fromJust' :: String -> Maybe a -> a
+fromJust' str = Maybe.fromMaybe (error str)
