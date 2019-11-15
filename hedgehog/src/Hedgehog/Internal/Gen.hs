@@ -135,6 +135,7 @@ module Hedgehog.Internal.Gen (
   -- ** Transfomer
   , runGenT
   , evalGen
+  , evalGen'
   , evalGenT
   , mapGenT
   , generate
@@ -250,6 +251,21 @@ evalGen size seed =
   fmap (fmap (fromJust' "evalGen")) .
   Tree.filter Maybe.isJust .
   evalGenT size seed
+
+evalGen' :: String -> Size -> Seed -> Gen a -> Maybe (Tree a)
+evalGen' str size seed =
+  fmap (fmap (fromJust' ("evalGen': " <> str))) .
+  Tree.filter Maybe.isJust .
+  evalGenT size seed
+
+{-
+fmap (fmap (fromJust' "evalGen")) :: Maybe (Tree (Maybe a)) -> Maybe (Tree a)
+
+fromJust' "evalGen" :: Maybe a -> a
+filter  :: (a -> Bool)       -> Tree a         -> Maybe (Tree a)
+filter' :: (Maybe a -> Bool) -> Tree (Maybe a) -> Maybe (Tree (Maybe a))
+evalGenT :: Monad m => Size -> Seed -> GenT m a -> TreeT m (Maybe a)
+-}
 
 -- | Runs a generator, producing its shrink tree.
 --
