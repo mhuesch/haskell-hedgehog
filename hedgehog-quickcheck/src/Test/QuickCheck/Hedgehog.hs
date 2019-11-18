@@ -64,7 +64,6 @@ hedgehog' str gen =
 
 ensureEvalGenNotBorked :: (Eq a, Show a) => String -> Gen a -> QuickCheck.Property
 ensureEvalGenNotBorked str gen = loop 100
-
  where
   loop :: Int -> QuickCheck.Property
   loop n =
@@ -75,11 +74,13 @@ ensureEvalGenNotBorked str gen = loop 100
         (case evalMaybeGen size seed gen of
            Nothing -> QuickCheck.property True
            Just x -> QuickCheck.counterexample str $
+                       -- this checks that the tree only contains `Just`s.
                        (treeValue x) QuickCheck.=/= Nothing)
         (loop (n - 1))
 
   evalMaybeGen :: Size -> Seed -> Gen a -> Maybe (Tree (Maybe a))
   evalMaybeGen size seed =
+    -- this should ensure that the tree contains only `Just`s.
     Tree.filter Maybe.isJust .
     evalGenT size seed
 
